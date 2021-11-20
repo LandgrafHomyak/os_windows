@@ -1,9 +1,9 @@
 #ifndef COMiC__OS_H
 #define COMiC__OS_H
 
-typedef struct COMiC_OS_Storage
+typedef struct COMiC_OS
 {
-
-} COMiC_OS_Storage;
+    void *any;
+} COMiC_OS;
 
 #endif /* COMiC__OS_H */

@@ -2,6 +2,6 @@
 
 ---
 
-## `COMiC_OS_Storage`
+## `COMiC_OS`
 field | comment
 ------|--------

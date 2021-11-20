@@ -1,7 +1,7 @@
 #include <COMiC/os.h>
 
 
-int COMiC_OS_Init(COMiC_OS_Storage *storage)
+int COMiC_OS_Init(COMiC_OS *storage)
 {
     return 0;
 }
