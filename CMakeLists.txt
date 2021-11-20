@@ -12,5 +12,12 @@ add_library(
         src/info.c
 )
 
-target_link_libraries(os_windows PUBLIC _os_include)
+target_link_libraries(os_windows PUBLIC COMiC::os::_include)
 target_include_directories(os_windows PUBLIC _include)
+set_target_properties(os_windows PROPERTIES LINKER_LANGUAGE C)
+
+if (${WIN32})
+    set_target_properties(os_windows PROPERTIES OUTPUT_NAME os)
+    set_target_properties(os_windows PROPERTIES LINKER_LANGUAGE C)
+    add_library(COMiC::os ALIAS os_windows)
+endif ()
