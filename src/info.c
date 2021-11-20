@@ -1,4 +1,6 @@
-//
-// Created by Admin on 20.11.2021.
-//
+#include <COMiC/os.h>
 
+const char *COMiC_OS_GetPlatformName(void)
+{
+    return "windows";
+}
