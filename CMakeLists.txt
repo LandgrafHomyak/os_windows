@@ -10,6 +10,8 @@ add_library(
         SHARED
 
         src/info.c
+        src/init.c
+        src/finalize.c
 )
 
 target_link_libraries(os_windows PUBLIC COMiC::os::_include)
