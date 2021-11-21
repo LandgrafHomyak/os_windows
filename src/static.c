@@ -2,7 +2,7 @@
 
 #include <COMiC/os.h>
 
-static COMiC_bool is_inited = 0;
+static COMiC_bool is_inited = COMiC_FALSE;
 
 static CRITICAL_SECTION global_lock;
 
@@ -14,6 +14,8 @@ enum _COMiC_OS_Init_ReturnCode _COMiC_OS_Init(void)
     }
 
     InitializeCriticalSection(&global_lock);
+
+    is_inited = COMiC_TRUE;
 
     return _COMiC_OS_Init_ReturnCode_SUCCESSFUL;
 }
@@ -32,6 +34,7 @@ COMiC_bool _COMiC_OS_IsInited(void)
 void _COMiC_OS_GlobalLock_Acquire(void)
 {
     EnterCriticalSection(&global_lock);
+    is_inited = COMiC_FALSE;
 }
 
 void _COMiC_OS_GlobalLock_Release(void)

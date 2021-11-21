@@ -24,5 +24,12 @@ set_target_properties(__COMiC_os_windows PROPERTIES LINKER_LANGUAGE C)
 
 if (${WIN32})
     set_target_properties(__COMiC_os_windows PROPERTIES OUTPUT_NAME os)
+    install(
+            TARGETS __COMiC_os_windows
+            ARCHIVE DESTINATION ./lib
+            LIBRARY DESTINATION ./
+            RUNTIME DESTINATION ./
+            PUBLIC_HEADER DESTINATION ./include
+    )
     add_library(COMiC::os ALIAS __COMiC_os_windows)
 endif ()

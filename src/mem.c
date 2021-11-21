@@ -2,7 +2,7 @@
 
 #include <COMiC/os.h>
 
-void *COMiC_Alloc(COMiC_size size)
+void *COMiC_Alloc(COMiC_usize size)
 {
     _COMiC_OS_Instance *os = _COMiC_OS_Instance_GetCurrent();
     if (os == NULL)
@@ -12,7 +12,7 @@ void *COMiC_Alloc(COMiC_size size)
     return HeapAlloc(os->heap, 0, size);
 }
 
-void *COMiC_ReAlloc(void *p, COMiC_size size)
+void *COMiC_ReAlloc(void *p, COMiC_usize size)
 {
     _COMiC_OS_Instance *os = _COMiC_OS_Instance_GetCurrent();
     if (os == NULL)

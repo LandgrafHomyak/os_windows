@@ -2,16 +2,16 @@
 
 #include <COMiC/os.h>
 
-int COMiC_OS_Lock_Create(COMiC_Lock *storage)
+COMiC_success COMiC_OS_Lock_Create(COMiC_Lock *storage)
 {
     InitializeCriticalSection(&(storage->cs_storage));
-    return 0;
+    return COMiC_OK;
 }
 
-int COMiC_OS_Lock_Lock(COMiC_Lock *storage)
+COMiC_success COMiC_OS_Lock_Lock(COMiC_Lock *storage)
 {
     EnterCriticalSection(&(storage->cs_storage));
-    return 0;
+    return COMiC_OK;
 }
 
 void COMiC_OS_Lock_Unlock(COMiC_Lock *storage)

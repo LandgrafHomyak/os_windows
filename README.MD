@@ -25,5 +25,5 @@ field                  | name          | comment
 `_COMiC_OS_Instance *` | _next         | _next OS instance in dl-list
 `_COMiC_OS_Instance *` | _prev         | _prev OS instance in dl-list
 `HANDLE`               | heap          | local heap
-`COMiC_size`           | heap_max_size | local heap max size
+`COMiC_usize`           | heap_max_size | local heap max size
 `COMiC_OS_Thread *`    | thread_list   | dl-list for bind threads

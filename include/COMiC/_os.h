@@ -1,5 +1,4 @@
 #include <COMiC/types.h>
-#include <COMiC/os.h>
 
 #ifndef COMiC__OS_H
 #define COMiC__OS_H
@@ -30,12 +29,11 @@ struct _COMiC_OS_Instance
     struct _COMiC_OS_Instance *_prev;
     struct _COMiC_OS_Instance *_next;
     HANDLE heap;
-    COMiC_size heap_max_size;
+    COMiC_usize heap_max_size;
     /* COMiC_OS_Thread root_thread; */
     /* todo make AVL three for threads list and make it static and common for all instances */
     COMiC_OS_Thread *thread_list;
 };
-
 
 #if COMiC_LIMITED
 # pragma pop()

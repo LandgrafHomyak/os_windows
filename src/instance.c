@@ -2,14 +2,14 @@
 
 _COMiC_OS_Instance *last_instance = NULL;
 
-int _COMiC_OS_Instance_Init(_COMiC_OS_Instance *storage, COMiC_size heap_max_size)
+COMiC_success _COMiC_OS_Instance_Init(_COMiC_OS_Instance *storage, COMiC_usize heap_max_size)
 {
     _COMiC_OS_GlobalLock_Acquire();
 
     storage->heap = HeapCreate(0, 0, heap_max_size);
     if (storage->heap == NULL)
     {
-        return -1;
+        return COMiC_FAILED;
     }
 
     storage->_prev = last_instance;
@@ -19,7 +19,7 @@ int _COMiC_OS_Instance_Init(_COMiC_OS_Instance *storage, COMiC_size heap_max_siz
 
     _COMiC_OS_GlobalLock_Release();
 
-    return 0;
+    return COMiC_OK;
 }
 
 void _COMiC_OS_Instance_Finalize(_COMiC_OS_Instance *storage)

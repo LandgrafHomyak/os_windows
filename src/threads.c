@@ -31,7 +31,7 @@ static void COMiC_OS_Thread_Register(_COMiC_OS_Instance *os_instance, COMiC_OS_T
 }
 
 
-int COMiC_OS_Thread_Create(COMiC_OS_Thread *storage, void (*func)(void *data), void *data)
+COMiC_success COMiC_OS_Thread_Create(COMiC_OS_Thread *storage, void (*func)(void *data), void *data)
 {
     _COMiC_OS_Instance *os_instance;
     struct thread_launcher_info *tli;
@@ -41,7 +41,7 @@ int COMiC_OS_Thread_Create(COMiC_OS_Thread *storage, void (*func)(void *data), v
     os_instance = _COMiC_OS_Instance_GetCurrent();
     if (os_instance == NULL)
     {
-        return -1;
+        return COMiC_FAILED;
     }
 
     tli = COMiC_Alloc(sizeof(*tli));
@@ -63,54 +63,54 @@ int COMiC_OS_Thread_Create(COMiC_OS_Thread *storage, void (*func)(void *data), v
     {
         COMiC_Free(tli);
         COMiC_Error_Set("Can't create thread");
-        return -1;
+        return COMiC_FAILED;
     }
 
 
     COMiC_OS_Thread_Register(os_instance, storage, storage->thread_handler);
     _COMiC_OS_GlobalLock_Release();
-    return 0;
+    return COMiC_OK;
 }
 
-int COMiC_OS_Thread_Pause(COMiC_OS_Thread *storage)
+COMiC_success COMiC_OS_Thread_Pause(COMiC_OS_Thread *storage)
 {
     if (SuspendThread(storage->thread_handler) == (DWORD) -1)
     {
         COMiC_Error_Set("Can't pause thread");
-        return -1;
+        return COMiC_FAILED;
     }
 
-    return 0;
+    return COMiC_OK;
 }
 
-int COMiC_OS_Thread_Resume(COMiC_OS_Thread *storage)
+COMiC_success COMiC_OS_Thread_Resume(COMiC_OS_Thread *storage)
 {
     if (ResumeThread(storage->thread_handler) == (DWORD) -1)
     {
         COMiC_Error_Set("Can't resume thread");
-        return -1;
+        return COMiC_FAILED;
     }
-    return 0;
+    return COMiC_OK;
 }
 
-int COMiC_OS_Thread_Wait(COMiC_OS_Thread *storage, COMiC_uint32 milliseconds)
+COMiC_success COMiC_OS_Thread_Wait(COMiC_OS_Thread *storage, COMiC_uint32 milliseconds)
 {
     if (WaitForSingleObject(storage->thread_handler, milliseconds == 0 ? INFINITE : milliseconds) == WAIT_FAILED)
     {
         COMiC_Error_Set("Can't wait for thread");
-        return -1;
+        return COMiC_FAILED;
     }
-    return 0;
+    return COMiC_OK;
 }
 
-int COMiC_OS_Thread_Kill(COMiC_OS_Thread *storage)
+COMiC_success COMiC_OS_Thread_Kill(COMiC_OS_Thread *storage)
 {
     if (TerminateThread(storage->thread_handler, 0))
     {
         COMiC_Error_Set("Can't kill thread");
-        return -1;
+        return COMiC_FAILED;
     }
-    return 0;
+    return COMiC_OK;
 }
 
 void COMiC_OS_Thread_Destroy(COMiC_OS_Thread *storage)
@@ -124,7 +124,7 @@ void COMiC_OS_Thread_Destroy(COMiC_OS_Thread *storage)
     }
 }
 
-int COMiC_OS_Thread_RegisterCurrent(_COMiC_OS_Instance *os_instance, COMiC_OS_Thread *storage)
+COMiC_success COMiC_OS_Thread_RegisterCurrent(_COMiC_OS_Instance *os_instance, COMiC_OS_Thread *storage)
 {
     _COMiC_OS_Instance *os = os_instance;
     COMiC_OS_Thread *thr;
@@ -144,14 +144,14 @@ int COMiC_OS_Thread_RegisterCurrent(_COMiC_OS_Instance *os_instance, COMiC_OS_Th
             {
                 COMiC_Error_Set("Re-registering thread not allowed");
                 _COMiC_OS_GlobalLock_Release();
-                return -1;
+                return COMiC_FAILED;
             }
         }
     }
 
     COMiC_OS_Thread_Register(os_instance, storage, storage->thread_handler);
     _COMiC_OS_GlobalLock_Release();
-    return 0;
+    return COMiC_OK;
 }
 
 void COMiC_OS_Thread_Unregister(COMiC_OS_Thread *storage)
