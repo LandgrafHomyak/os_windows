@@ -12,12 +12,12 @@ add_library(
         include/os.def
 
         src/info.c
-        src/os.c
+        src/static.c
         src/get_time.c
         src/threads.c
         src/errors.c
         src/mem.c
-        src/lock.c)
+        src/lock.c src/instance.c)
 
 target_link_libraries(__COMiC_os_windows PUBLIC COMiC::os::_include)
 target_include_directories(__COMiC_os_windows PUBLIC _include)

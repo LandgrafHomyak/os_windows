@@ -17,12 +17,10 @@ static DWORD thread_proc(struct thread_launcher_info *data)
     data->func(data->data);
     thread = data->thread;
     COMiC_Free(data);
-    ret = _COMiC_Error_Get(&(thread->error)) != NULL ? 1 : 0;
-    _COMiC_Error_Clear(&(thread->error));
-    return ret;
+    return _COMiC_Error_Get(&(thread->error)) != NULL ? 1 : 0;
 }
 
-static void COMiC_OS_Thread_Register(COMiC_OS *os_instance, COMiC_OS_Thread *storage, HANDLE thread)
+static void COMiC_OS_Thread_Register(_COMiC_OS_Instance *os_instance, COMiC_OS_Thread *storage, HANDLE thread)
 {
     storage->thread_handler = thread;
     storage->os_instance = os_instance;
@@ -35,11 +33,13 @@ static void COMiC_OS_Thread_Register(COMiC_OS *os_instance, COMiC_OS_Thread *sto
 
 int COMiC_OS_Thread_Create(COMiC_OS_Thread *storage, void (*func)(void *data), void *data)
 {
-    COMiC_OS_Thread *ct;
+    _COMiC_OS_Instance *os_instance;
     struct thread_launcher_info *tli;
 
-    ct = COMiC_OS_Thread_GetCurrent();
-    if (ct == NULL)
+    _COMiC_OS_GlobalLock_Acquire();
+
+    os_instance = _COMiC_OS_Instance_GetCurrent();
+    if (os_instance == NULL)
     {
         return -1;
     }
@@ -58,6 +58,7 @@ int COMiC_OS_Thread_Create(COMiC_OS_Thread *storage, void (*func)(void *data), v
             CREATE_SUSPENDED,
             NULL
     );
+
     if (storage->thread_handler == NULL)
     {
         COMiC_Free(tli);
@@ -65,19 +66,9 @@ int COMiC_OS_Thread_Create(COMiC_OS_Thread *storage, void (*func)(void *data), v
         return -1;
     }
 
-    if (COMiC_OS_Lock_Lock(&(ct->os_instance->global_lock), 0))
-    {
-        COMiC_Free(tli);
-        if (CloseHandle(storage->thread_handler) == 0)
-        {
 
-            COMiC_Error_Fatal("Can't destroy mutex");
-            return -1;
-        }
-        return -1;
-    }
-    COMiC_OS_Thread_Register(ct->os_instance, storage, storage->thread_handler);
-    COMiC_OS_Lock_Unlock(&(ct->os_instance->global_lock));
+    COMiC_OS_Thread_Register(os_instance, storage, storage->thread_handler);
+    _COMiC_OS_GlobalLock_Release();
     return 0;
 }
 
@@ -88,6 +79,7 @@ int COMiC_OS_Thread_Pause(COMiC_OS_Thread *storage)
         COMiC_Error_Set("Can't pause thread");
         return -1;
     }
+
     return 0;
 }
 
@@ -132,15 +124,12 @@ void COMiC_OS_Thread_Destroy(COMiC_OS_Thread *storage)
     }
 }
 
-int COMiC_OS_Thread_RegisterCurrent(COMiC_OS *os_instance, COMiC_OS_Thread *storage)
+int COMiC_OS_Thread_RegisterCurrent(_COMiC_OS_Instance *os_instance, COMiC_OS_Thread *storage)
 {
-    COMiC_OS *os = os_instance;
+    _COMiC_OS_Instance *os = os_instance;
     COMiC_OS_Thread *thr;
 
-    if (COMiC_OS_Lock_Lock(&(os->global_lock), 0))
-    {
-        return -1;
-    }
+    _COMiC_OS_GlobalLock_Acquire();
 
     for (; os->_prev != NULL; os = os->_prev)
     {}
@@ -154,37 +143,36 @@ int COMiC_OS_Thread_RegisterCurrent(COMiC_OS *os_instance, COMiC_OS_Thread *stor
             if (thr == storage->thread_handler)
             {
                 COMiC_Error_Set("Re-registering thread not allowed");
+                _COMiC_OS_GlobalLock_Release();
                 return -1;
             }
         }
     }
 
     COMiC_OS_Thread_Register(os_instance, storage, storage->thread_handler);
-    COMiC_OS_Lock_Unlock(&(os_instance->global_lock));
-
+    _COMiC_OS_GlobalLock_Release();
     return 0;
 }
 
 void COMiC_OS_Thread_Unregister(COMiC_OS_Thread *storage)
 {
-    _COMiC_Error_Clear(&storage->error);
-    if (COMiC_OS_Lock_Lock(&(storage->os_instance->global_lock), 0))
-    {
-        COMiC_Error_Fatal("can't acquire mutex");
-    }
+    _COMiC_OS_GlobalLock_Acquire();
+
     if (storage->os_instance->thread_list == storage)
     {
         storage->os_instance->thread_list = storage->_next;
     }
-
     if (storage->_prev != NULL)
     {
         storage->_prev->_next = storage->_next;
     }
-
     if (storage->_next != NULL)
     {
         storage->_next->_prev = storage->_prev;
     }
-    COMiC_OS_Lock_Unlock(&(storage->os_instance->global_lock));
+
+    _COMiC_Error_Clear(&storage->error);
+
+
+    _COMiC_OS_GlobalLock_Acquire();
 }

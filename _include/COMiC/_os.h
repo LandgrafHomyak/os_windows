@@ -11,29 +11,29 @@
 #endif
 typedef struct COMiC_Lock
 {
-    HANDLE mutex_handler;
+    CRITICAL_SECTION cs_storage;
 } COMiC_Lock;
 
-typedef struct COMiC_OS COMiC_OS;
+typedef struct _COMiC_OS_Instance _COMiC_OS_Instance;
 
 typedef struct COMiC_OS_Thread
 {
     struct COMiC_OS_Thread *_prev;
     struct COMiC_OS_Thread *_next;
     HANDLE thread_handler;
-    COMiC_OS *os_instance;
+    _COMiC_OS_Instance *os_instance;
     COMiC_Error error;
 } COMiC_OS_Thread;
 
-struct COMiC_OS
+struct _COMiC_OS_Instance
 {
-    struct COMiC_OS *_prev;
-    struct COMiC_OS *_next;
+    struct _COMiC_OS_Instance *_prev;
+    struct _COMiC_OS_Instance *_next;
     HANDLE heap;
-    COMiC_size heap_size;
-    COMiC_OS_Thread root_thread;
+    COMiC_size heap_max_size;
+    /* COMiC_OS_Thread root_thread; */
+    /* todo make AVL three for threads list and make it static and common for all instances */
     COMiC_OS_Thread *thread_list;
-    COMiC_Lock global_lock;
 };
 
 

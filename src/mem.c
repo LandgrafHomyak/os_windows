@@ -4,7 +4,7 @@
 
 void *COMiC_Alloc(COMiC_size size)
 {
-    COMiC_OS *os = COMiC_OS_GetCurrent();
+    _COMiC_OS_Instance *os = _COMiC_OS_Instance_GetCurrent();
     if (os == NULL)
     {
         return NULL;
@@ -14,7 +14,7 @@ void *COMiC_Alloc(COMiC_size size)
 
 void *COMiC_ReAlloc(void *p, COMiC_size size)
 {
-    COMiC_OS *os = COMiC_OS_GetCurrent();
+    _COMiC_OS_Instance *os = _COMiC_OS_Instance_GetCurrent();
     if (os == NULL)
     {
         return NULL;
@@ -24,7 +24,7 @@ void *COMiC_ReAlloc(void *p, COMiC_size size)
 
 void COMiC_Free(void *p)
 {
-    COMiC_OS *os = COMiC_OS_GetCurrent();
+    _COMiC_OS_Instance *os = _COMiC_OS_Instance_GetCurrent();
     if (os == NULL)
     {
         return;

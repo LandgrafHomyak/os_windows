@@ -4,34 +4,22 @@
 
 int COMiC_OS_Lock_Create(COMiC_Lock *storage)
 {
-    storage->mutex_handler = CreateMutex(NULL, FALSE, NULL);
-    if (storage->mutex_handler == NULL)
-    {
-        COMiC_Error_Set("Can't create mutex");
-        return -1;
-    }
+    InitializeCriticalSection(&(storage->cs_storage));
     return 0;
 }
 
-int COMiC_OS_Lock_Lock(COMiC_Lock *storage, COMiC_uint32 milliseconds)
+int COMiC_OS_Lock_Lock(COMiC_Lock *storage)
 {
-    if (WaitForSingleObject(storage->mutex_handler, milliseconds == 0 ? INFINITE : milliseconds) == WAIT_FAILED)
-    {
-        COMiC_Error_Set("Can't acquire mutex");
-        return -1;
-    }
+    EnterCriticalSection(&(storage->cs_storage));
     return 0;
 }
 
 void COMiC_OS_Lock_Unlock(COMiC_Lock *storage)
 {
-    if (ReleaseMutex(storage->mutex_handler))
-    {
-        COMiC_Error_Fatal("Can't release mutex");
-        return;
-    }
+    LeaveCriticalSection(&(storage->cs_storage));
 }
 
+/*
 COMiC_bool COMiC_OS_Lock_IsLocked(COMiC_Lock *storage)
 {
     switch (WaitForSingleObject(storage->mutex_handler, 0))
@@ -50,12 +38,8 @@ COMiC_bool COMiC_OS_Lock_IsLocked(COMiC_Lock *storage)
             return 0;
     }
 }
-
+*/
 void COMiC_OS_Lock_Destroy(COMiC_Lock *storage)
 {
-    if (CloseHandle(storage->mutex_handler) == 0)
-    {
-        COMiC_Error_Fatal("Can't destroy mutex");
-        return;
-    }
+    DeleteCriticalSection(&(storage->cs_storage));
 }
