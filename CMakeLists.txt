@@ -19,7 +19,7 @@ add_library(
 )
 
 target_link_libraries(__COMiC_os_windows PUBLIC COMiC::os::_include)
-target_include_directories(__COMiC_os_windows PUBLIC _include)
+target_include_directories(__COMiC_os_windows PUBLIC include)
 set_target_properties(__COMiC_os_windows PROPERTIES LINKER_LANGUAGE C)
 
 if (${WIN32})
