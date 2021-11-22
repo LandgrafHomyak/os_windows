@@ -8,11 +8,6 @@
 #if COMiC_LIMITED
 # pragma pack(push, 1)
 #endif
-typedef struct COMiC_Lock
-{
-    CRITICAL_SECTION cs_storage;
-} COMiC_Lock;
-
 typedef struct _COMiC_OS_Instance _COMiC_OS_Instance;
 
 typedef struct COMiC_OS_Thread
@@ -34,6 +29,20 @@ struct _COMiC_OS_Instance
     /* todo make AVL three for threads list and make it static and common for all instances */
     COMiC_OS_Thread *thread_list;
 };
+
+
+typedef struct COMiC_Lock
+{
+    CRITICAL_SECTION cs_storage;
+} COMiC_Lock;
+
+
+typedef struct COMiC_CondVar
+{
+    CONDITION_VARIABLE cv_storage;
+    COMiC_Lock *lock;
+} COMiC_CondVar;
+
 
 #if COMiC_LIMITED
 # pragma pop()

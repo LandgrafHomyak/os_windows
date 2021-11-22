@@ -16,6 +16,7 @@ add_library(
         src/mem.c
         src/lock.c
         src/instance.c
+        src/condvar.c
 )
 
 target_link_libraries(__COMiC_os_windows PUBLIC COMiC::os::_include)
